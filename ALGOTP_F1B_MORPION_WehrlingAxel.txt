@@ -1,0 +1,287 @@
+
+
+const
+	maxgrill<--8
+
+//But: Mise à jour des score et affiche le joueur gagnant.
+//Entree: Rien.
+//Sortie: Le joueur Gagnant.
+procedure AfficheVictoireManche(victoire,j1,j2 : Chaîne ; var score1 : entier ; var score2 : entier);
+
+Début
+	//Mise à jour des scores.
+	SI (victoire=j1) ALORS
+		score1<--score1+1
+	SI (victoire=j2) ALORS
+		score2<--score2+1
+	ECRIRE("C'est "&victoire&" qui remporte la manche!")
+	ECRIRE("Le score est de : "&j1&": "&score1&" | "&j2&": "&score2)
+Fin.
+
+
+//But: Entrer des Speudos des joueurs.
+//Entree: 2 chaînes.
+//Sortie: 2 chaînes.	
+procedure Speudo(var j1 : Chaîne ; var j2 : Chaîne)
+
+Début
+	ECRIRE("Veuillez entrer le Speudo du Joueur n°1:")
+	LIRE(j1)
+	ECRIRE("Veuillez entrer le Speudo du Joueur n°2:")
+	LIRE(j2)
+Fin.
+
+
+//But: Choisir duquel des deux joueurs est celui qui va commencer.
+//Entree: 1 chaîne.
+//Sortie: Le joueur qui commence.
+procedure QuiCommence(var tourjoueur:entier ; j1 : Chaîne ; j2 : Chaîne)
+
+var
+	entrerjoueur:Chaîne;
+	test:booleen;
+
+Début
+	REPETER
+		Début
+			test<--Faux;
+			ECRIRE("Qui commence ? "&j1&" ou "&j2&" ? :")
+			LIRE(entrerjoueur)
+
+			SI (lowercase(entrerjoueur) = lowercase(j1)) ALORS
+				Début
+					ECRIRE(j1&" Commence !")
+					tourjoueur<--1
+					test<--Vrai
+				Fin.
+
+			SI (lowercase(entrerjoueur) = lowercase(j2)) ALORS
+				Début
+					ECRIRE(j2&" Commence !")
+					tourjoueur<--2
+					test<--Vrai
+				Fin.
+			
+			//Vérifie si l'entrer est correcte.
+			SI (test=Faux) ALORS
+				Début
+					ECRIRE("Erreur, veuillez entrer : "&j1&"/"&j2)
+				Fin.
+		Fin.
+	JUSQU'A (tourjoueur=1) OU (tourjoueur=2)
+Fin.
+
+
+//But: Initialiser et effacer la grille de jeu
+//Entree:Rien.
+//Sortie:Rien.
+procedure InitGrill(var Grill:array of char)
+var
+	i:entier;
+
+Début
+	POUR i DE 0 A 8 FAIRE
+		Début
+			Grill[i]<--' '
+		Fin.
+Fin.
+
+
+//But:Afficher la grille de jeu à jour.
+//Entree: Rien.
+//Sortie: Rien.
+procedure AfficheGrill(var Grill:array of char)
+
+Début
+	ECRIRE("      "&Grill[0]&" | "&Grill[1]&" | "&Grill[2])
+	ECRIRE("     ___|___|___')
+	ECRIRE("      "&Grill[3]&" | "&Grill[4]&" | "&Grill[5])
+	ECRIRE("     ___|___|___")
+	ECRIRE("      "&Grill[6]&" | "&Grill[7]&" | "&Grill[8])
+	ECRIRE("        |   |   ")
+Fin.
+
+
+//But: Demander au joueur de choisir une case à remplir de son symbole.
+//Entree: 1 entier.
+//Sortie: 1 charatère.
+procedure ChoisirCase(var Grill:array of char ; var tourjoueur:entier ; j1 : Chaîne ; j2 : Chaîne);
+var
+	choix:entier;
+
+Début
+	SI (tourjoueur=1) ALORS
+	Début
+		REPETER
+		Début
+			REPETER
+			Début	
+				ECRIRE(j1,' choisi une case vide entre 0 et 8')
+				LIRE(choix)
+				
+				//VérSIie si le joueur entre un chSIfre entre 0 et 8.
+				SI not((0<=choix) ET (choix<=8)) ALORS
+				Début
+					ECRIRE('Erreur, chSIfre non compris entre 0 et 8.')
+		
+					
+				Fin.
+			Fin.
+			JUSQU'A (choix>=0) ET (choix<=8)
+			
+			//VérSIie si la case entrée n'est aps déjà prise.
+			SI (Grill[choix] <> ' ') ALORS
+			Début
+				ECRIRE('Erreur, cette case est deja utilisee.')
+
+
+			Fin.
+		Fin.
+		JUSQU'A (Grill[choix] = ' ')
+		Grill[choix]<-- 'X'
+	Fin.
+	
+	SI (tourjoueur=2) ALORS
+	Début
+		REPETER
+		Début
+			REPETER
+			Début	
+				ECRIRE(j2,' choisi une case vide entre 0 et 8')
+				LIRE(choix)
+				SI not((0<=choix) ET (choix<=8)) ALORS
+				Début
+					ECRIRE('Erreur, chSIfre non compris entre 0 et 8.')
+					delay(2000)
+					
+				Fin.
+			Fin.
+			JUSQU'A (choix>=0) ET (choix<=8)
+				
+			SI (Grill[choix] <> ' ') ALORS
+			Début
+				ECRIRE('Erreur, cette case est deja utilisee.')
+				
+			Fin.
+		Fin.
+		JUSQU'A (Grill[choix] = ' ')
+		Grill[choix]<-- 'O'
+	Fin.
+	
+	tourjoueur<--tourjoueur+1
+	//Réinitialise le tour de joueur au joueur n°1 lorsqu'il atteint 3.
+	SI (tourjoueur=3) ALORS	
+		tourjoueur<--1
+	
+Fin.
+
+//But: VérSIie si un joueur a fait un alignement
+//Entree: Rien.
+//Sortie: 1 chaîne.
+function AlignerVictoire (j1,j2:Chaîne ; Grill : array of char) : Chaîne
+
+Début
+	//Réinitialise la valeur de AlignerVictoire à chaque manche.
+	AlignerVictoire<--''
+	
+	//test si les X forment une ligne, une colonne, une diagonale.
+	SI ((Grill[0]='X') ET (Grill[0]=Grill[3]) ET (Grill[3]=Grill[6]))
+		OU ((Grill[1]='X') ET (Grill[1]=Grill[4]) ET (Grill[4]=Grill[7]))
+		OU ((Grill[2]='X') ET (Grill[2]=Grill[5]) ET (Grill[5]=Grill[8]))
+		OU ((Grill[0]='X') ET (Grill[0]=Grill[1]) ET (Grill[1]=Grill[2]))
+		OU ((Grill[3]='X') ET (Grill[3]=Grill[4]) ET (Grill[4]=Grill[5]))
+		OU ((Grill[6]='X') ET (Grill[6]=Grill[7]) ET (Grill[7]=Grill[8]))
+		OU ((Grill[0]='X') ET (Grill[0]=Grill[4]) ET (Grill[4]=Grill[8]))
+		OU ((Grill[6]='X') ET (Grill[6]=Grill[4]) ET (Grill[4]=Grill[2])) ALOUS
+		Début
+			AlignerVictoire<--j1
+		Fin.
+	//test si les O forment une ligne, une colonne, une diagonale.
+	SI ((Grill[0]='O') ET (Grill[0]=Grill[3]) ET (Grill[3]=Grill[6]))
+		OU ((Grill[1]='O') ET (Grill[1]=Grill[4]) ET (Grill[4]=Grill[7]))
+		OU ((Grill[2]='O') ET (Grill[2]=Grill[5]) ET (Grill[5]=Grill[8]))
+		OU ((Grill[0]='O') ET (Grill[0]=Grill[1]) ET (Grill[1]=Grill[2]))
+		OU ((Grill[3]='O') ET (Grill[3]=Grill[4]) ET (Grill[4]=Grill[5]))
+		OU ((Grill[6]='O') ET (Grill[6]=Grill[7]) ET (Grill[7]=Grill[8]))
+		OU ((Grill[0]='O') ET (Grill[0]=Grill[4]) ET (Grill[4]=Grill[8]))
+		OU ((Grill[6]='O') ET (Grill[6]=Grill[4]) ET (Grill[4]=Grill[2])) ALORS
+		Début
+			AlignerVictoire<--j2;
+		Fin.
+Fin.
+
+//But: Entrer le nombre de manche voulut
+//Entree: Un entier.
+//Sortie: Un entier.
+procedure NombreManche(var manche : entier);
+
+Début
+	ECRIRE('Combien de manche voulez vous jouer ?');
+	LIRE(manche);
+Fin.
+
+
+//But: Affichage du résultat (Gagnant).
+//Entree: Rien.
+//Sortie: Le joueur gagnant ou l'égalité.
+procedure VictoireFinal(score1,score2 : entier ; j1,j2 : Chaîne);
+
+Début
+	SI (score1=score2) ALORS
+		ECRIRE('C''est une egalite !!');
+	SI (score1>score2) ALORS
+		ECRIRE('C''est ',j1,' qui remporte la victoire!!');
+	SI (score1<score2) ALORS
+		ECRIRE('C''est ',j2,' qui remporte la victoire!!');
+Fin.
+
+
+//Programme Principale:
+
+
+//But: Jouer au Morpion.
+//Entrer: 3 Chaines et des entiers.
+//Sortie: Jeux du Morpion.
+var
+	//tourjoueur = variable qui permet de savoir lequel des deux joueurs doit jouer.
+	//Manche = Variable entrer par l'utilisateur, nombre de manche désiré.
+	//score1 = score du joueur 1 , score2 = score du joueur 2.
+	tourjoueur,manche,i,score1,score2:entier;
+	
+	//Grill = tableau où seront entrés les symboles.
+	Grill:array [0..8] of char;
+	
+	//Speudos des joueurs.
+	j1,j2,victoire:Chaîne;
+
+Début
+	;
+	score1<--0;
+	score2<--0;
+	Speudo(j1,j2);
+	QuiCommence(tourjoueur,j1,j2);
+	NombreManche(manche);
+	//Boucle de manche qui s'arrête quand le nombre de manche entré est atteint.
+	REPETER
+	Début
+		InitGrill(Grill);
+		//Boucle d'entrer de case qui s'arrête lorsqu'un joueur fasse un alignement.
+		REPETER
+		Début
+			;
+			ECRIRE('Les cases sont numerotees de gauche a droite et du haut vers le bas de 0 a 8')
+			AfficheGrill(Grill)
+			ChoisirCase(Grill,tourjoueur,j1,j2)
+			AlignerVictoire(j1,j2,Grill)
+		Fin.
+		JUSQU'A (AlignerVictoire(j1,j2,Grill)=j1) OU (AlignerVictoire(j1,j2,Grill)=j2)
+		
+		AfficheGrill(Grill)
+		victoire<--AlignerVictoire(j1,j2,Grill)
+		AfficheVictoireManche(victoire,j1,j2,score1,score2)
+		delay(6000);
+	Fin.
+	JUSQU'A (score1+score2=manche)
+	VictoireFinal(score1,score2,j1,j2)
+	LIRE;
+END.
